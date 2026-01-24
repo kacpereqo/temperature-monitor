@@ -22,4 +22,4 @@ set confirm off
 set confirm on
 
 # Load application symbols
-file /home/slimak/CLionProjects/temperature_monitor/build/hello_world.elf
+file /home/slimak/CLionProjects/temperature_monitor/build/temperature_monitor.elf
