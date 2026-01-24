@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "hello_world",
-    "project_version":    "1",
+    "project_version":    "cc50931-dirty",
     "project_path":       "/home/slimak/CLionProjects/temperature_monitor",
     "idf_path":           "/home/slimak/esp/esp-idf",
     "build_dir":          "/home/slimak/CLionProjects/temperature_monitor/build",
@@ -370,7 +370,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "/home/slimak/CLionProjects/temperature_monitor/build/esp-idf/main/libmain.a",
-            "sources": [ "/home/slimak/CLionProjects/temperature_monitor/main/hello_world_main.c" ],
+            "sources": [ "/home/slimak/CLionProjects/temperature_monitor/main/main.cpp" ],
             "include_dirs": []
         },
         "mbedtls": {
