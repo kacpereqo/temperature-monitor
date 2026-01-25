@@ -16,3 +16,4 @@ dependencies:
   #   public: true
   espressif/esp_lcd_ili9341: ^2.0.0
   lvgl/lvgl: ^9.4.0
+  espressif/ds18b20: ^0.2.0

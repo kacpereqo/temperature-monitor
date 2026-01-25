@@ -95,6 +95,10 @@
 /home/slimak/CLionProjects/temperature_monitor/build/esp-idf/espressif__esp_lcd_ili9341/libespressif__esp_lcd_ili9341.a
 /home/slimak/CLionProjects/temperature_monitor/build/esp-idf/esp_lcd/libesp_lcd.a
 /home/slimak/CLionProjects/temperature_monitor/build/esp-idf/lvgl__lvgl/liblvgl__lvgl.a
+/home/slimak/CLionProjects/temperature_monitor/build/esp-idf/espressif__onewire_bus/libespressif__onewire_bus.a
+/home/slimak/CLionProjects/temperature_monitor/build/esp-idf/espressif__ds18b20/libespressif__ds18b20.a
+/home/slimak/CLionProjects/temperature_monitor/build/esp-idf/espressif__onewire_bus/libespressif__onewire_bus.a
 /home/slimak/CLionProjects/temperature_monitor/build/esp-idf/main/libmain.a
 /home/slimak/CLionProjects/temperature_monitor/build/esp-idf/espressif__esp_lcd_ili9341/libespressif__esp_lcd_ili9341.a
 /home/slimak/CLionProjects/temperature_monitor/build/esp-idf/lvgl__lvgl/liblvgl__lvgl.a
+/home/slimak/CLionProjects/temperature_monitor/build/esp-idf/espressif__ds18b20/libespressif__ds18b20.a

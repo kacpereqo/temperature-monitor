@@ -11,16 +11,20 @@
 #include "esp_timer.h"
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
-#include "esp_heap_caps.h"
+#include "esp_log.h"
+#include "onewire_bus.h"
 
 #include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_vendor.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_ili9341.h"
+#include "ds18b20.h"
 
 extern "C" {
 #include "lvgl.h"
 }
+
+static const char *TAG = "ds18b20";
 
 constexpr gpio_num_t PIN_NUM_MOSI = GPIO_NUM_23;
 constexpr gpio_num_t PIN_NUM_CLK = GPIO_NUM_18;
@@ -53,10 +57,6 @@ static bool notify_lvgl_flush_ready(esp_lcd_panel_io_handle_t, esp_lcd_panel_io_
     const auto disp = static_cast<lv_display_t *>(user_ctx);
     lv_display_flush_ready(disp);
     return false;
-}
-
-static void lvgl_tick_cb(void *) {
-    lv_tick_inc(2);
 }
 
 class Display_Il9341 {
@@ -198,7 +198,8 @@ private:
     std::array<float, 5> readings{};
 };
 
-TemperatureSensorData temperature;
+TemperatureSensorData temperature_data;
+
 
 [[noreturn]] void task_update_display(void *pvParameter) {
 
@@ -210,47 +211,132 @@ TemperatureSensorData temperature;
 
     std::array<lv_obj_t *, 5> labels{};
 
+    lv_obj_t * frame = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(frame, Display_Il9341::WIDTH - 10, Display_Il9341::HEIGHT - 10);
+    lv_obj_center(frame);
+    lv_obj_set_style_bg_color(frame, rgb_fix(DARK_BG), 0);
+    lv_obj_set_style_border_color(frame, rgb_fix(WHITE), 0);
+    lv_obj_set_style_border_width(frame, 2, 0);
+
+    lv_obj_set_flex_flow(frame, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(frame, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
+    lv_obj_set_style_pad_row(frame, 20, 0);
+
+    lv_obj_t * header = lv_label_create(frame);
+    lv_label_set_text(header, LV_SYMBOL_HOME " Temperature reading");
+    lv_obj_set_style_text_color(header, rgb_fix(WHITE), 0);
+    lv_obj_set_style_text_font(header, &lv_font_montserrat_16, 0);
+    lv_obj_set_style_pad_bottom(header, 10, 0);
+    lv_obj_set_size(header, lv_pct(100), LV_SIZE_CONTENT);
+    lv_obj_set_style_border_color(header, rgb_fix(WHITE), 0);
+    lv_obj_set_style_border_side(header, LV_BORDER_SIDE_BOTTOM, 0);
+    lv_obj_set_style_border_width(header, 1, 0);
+
     for (size_t i = 0; i < 5; i++) {
-        labels[i] = lv_label_create(lv_screen_active());
-        lv_obj_align(labels[i], LV_ALIGN_TOP_LEFT, 10, 10 + i * 40);
+        labels[i] = lv_label_create(frame);
+        lv_label_set_text(labels[i], "Label Text");
         lv_obj_set_style_text_color(labels[i], rgb_fix(WHITE), 0);
-        lv_obj_set_style_text_font(labels[i], &lv_font_montserrat_20, 0);
-        // lv_obj_set_style_text_opa(labels[i], LV_OPA_COVER, 0);
-        // lv_obj_set_style_text_color(labels[i], lv_color_black(), 0);
+        lv_obj_set_style_text_font(labels[i], &lv_font_montserrat_30, 0);
     }
 
-
     while (true) {
-            auto readings = temperature.get_readings();
+            auto readings = temperature_data.get_readings();
             for (size_t i = 0; i < 5; i++) {
                 char buf[32];
                 std::snprintf(buf, sizeof(buf), "Pipe %u: %.2f °C", static_cast<unsigned>(i + 1), readings[i]);
                 lv_label_set_text(labels[i], buf);
             }
 
-            lv_tick_inc(100);
+            lv_tick_inc(10);
             lv_timer_handler();
-            vTaskDelay(pdMS_TO_TICKS(100));
+            vTaskDelay(pdMS_TO_TICKS(1000));
         }
 }
 
+class DS18B20_Sensor {
+public:
+    explicit DS18B20_Sensor(const gpio_num_t pin) : pin(pin) {}
+    void init() {
+        init_onewire_bus();
+
+        onewire_device_iter_handle_t iter = NULL;
+        onewire_device_t next_onewire_device;
+        esp_err_t search_result = ESP_OK;
+
+        ESP_ERROR_CHECK(onewire_new_device_iter(bus, &iter));
+        ESP_LOGI(TAG, "Device iterator created, start searching...");
+        do {
+            search_result = onewire_device_iter_get_next(iter, &next_onewire_device);
+            if (search_result == ESP_OK) { // found a new device, let's check if we can upgrade it to a DS18B20
+                ds18b20_config_t ds_cfg = {};
+                onewire_device_address_t address;
+
+                if (ds18b20_new_device_from_enumeration(&next_onewire_device, &ds_cfg, &device) == ESP_OK) {
+                    ds18b20_get_device_address(device, &address);
+                    ESP_LOGI(TAG, "Found a DS18B20[%d], address: %016llX", 1, address);
+                } else {
+                    ESP_LOGI(TAG, "Found an unknown device, address: %016llX", next_onewire_device.address);
+                }
+            }
+        } while (search_result != ESP_ERR_NOT_FOUND);
+
+    }
+
+    [[nodiscard]] float read_temperature() const {
+        assert(device != nullptr && "Device not initialized");
+
+        float temperature = 0.0f;
+
+        ESP_ERROR_CHECK(ds18b20_trigger_temperature_conversion_for_all(bus));
+            ESP_ERROR_CHECK(ds18b20_get_temperature(device, &temperature));
+            ESP_LOGI(TAG, "temperature read from DS18B20: %.2fC", temperature);
+
+        return temperature;
+    }
+
+private:
+    onewire_bus_handle_t bus = nullptr;
+    ds18b20_device_handle_t device = nullptr;
+    const gpio_num_t pin;
+
+    void init_onewire_bus() {
+       const onewire_bus_config_t bus_config = {
+            .bus_gpio_num = this->pin,
+            .flags = {
+                .en_pull_up = true, // enable the internal pull-up resistor in case the external device didn't have one
+            }
+        };
+        constexpr onewire_bus_rmt_config_t rmt_config = {
+            .max_rx_bytes = 10, // 1byte ROM command + 8byte ROM number + 1byte device command
+        };
+
+        ESP_ERROR_CHECK(onewire_new_bus_rmt(&bus_config, &rmt_config, &bus));
+
+        // ESP_ERROR_CHECK(onewire_new_device_iter(bus, &iter));
+    }
+};
+
 [[noreturn]] void task_read_temperature_sensors(void *pvParameter) {
+    DS18B20_Sensor sensor(GPIO_NUM_16);
+    sensor.init();
+
+
     while (true) {
+        const float temp = sensor.read_temperature();
+
         std::array<float, 5> new_readings{};
         for (size_t i = 0; i < 5; i++) {
-            new_readings[i] = 20.0f + static_cast<float>(std::rand() % 1000) / 50.0f; // Simulated temperature
+            new_readings[i] = temp + std::rand() % 100 / 1000.0f;
         }
-        temperature.set_readings(new_readings);
+
+        temperature_data.set_readings(new_readings);
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
-extern "C" [[noreturn]] void app_main(void) {
-
+extern "C" void app_main(void) {
     xTaskCreate(task_update_display, "task_update_display", 8192, nullptr, tskIDLE_PRIORITY + 1, nullptr);
     xTaskCreate(task_read_temperature_sensors, "task_read_temperature_sensors", 4096, nullptr, tskIDLE_PRIORITY + 1, nullptr);
 
-    while (true) {
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
+    vTaskDelete(nullptr);
 }
