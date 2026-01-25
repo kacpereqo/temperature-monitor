@@ -33,6 +33,14 @@ constexpr gpio_num_t PIN_NUM_DC = GPIO_NUM_2;
 constexpr gpio_num_t PIN_NUM_RST = GPIO_NUM_4;
 constexpr gpio_num_t PIN_NUM_BCKL = GPIO_NUM_15;
 
+constexpr std::array<std::string_view, 5> LABELS = {
+    "Bufor gora",
+    "Pompa ciepla wyj",
+    "Pompa ciepla wej",
+    "Wyj kaloryfer",
+    "Wyj podloga",
+};
+
 const lv_color_t WHITE = lv_color_make(255, 255, 255);
 const lv_color_t BLACK = lv_color_make(0, 0, 0);
 
@@ -137,14 +145,16 @@ private:
         esp_lcd_panel_reset(panel);
         esp_lcd_panel_init(panel);
         esp_lcd_panel_disp_on_off(panel, true);
-        ESP_ERROR_CHECK(esp_lcd_panel_mirror(panel, false, true));
+        esp_lcd_panel_set_gap(panel, 0, 0);       // reset gaps
+        esp_lcd_panel_swap_xy(panel, true);       // rotate X/Y
+        esp_lcd_panel_mirror(panel, true, true); // mirror if needed
 
     }
 };
 
 class LVLG {
 public:
-    LVLG(Display_Il9341 display) : io_handle(display.get_io_handle()), panel(display.get_panel()) {}
+    LVLG(const Display_Il9341 &display) : io_handle(display.get_io_handle()), panel(display.get_panel()) {}
 
     void init() {
         lv_init();
@@ -157,9 +167,11 @@ public:
         cbs.on_color_trans_done = notify_lvgl_flush_ready;
         ESP_ERROR_CHECK(esp_lcd_panel_io_register_event_callbacks(io_handle, &cbs, disp));
 
-        static lv_color_t buf1[Display_Il9341::HEIGHT * 40];
-        static lv_color_t buf2[Display_Il9341::HEIGHT * 40];
+        static lv_color_t buf1[Display_Il9341::WIDTH * 40];
+        static lv_color_t buf2[Display_Il9341::WIDTH * 40];
         lv_display_set_buffers(disp, buf1, buf2, sizeof(buf1), LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+        lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_90);
 
         lv_display_set_theme(disp, lv_theme_default_init(
             disp,
@@ -168,8 +180,10 @@ public:
             true,
             &lv_font_montserrat_20
         ));
+
         lv_obj_set_style_bg_color(lv_scr_act(), DARK_BG, 0);
     }
+
 
 private:
     esp_lcd_panel_io_handle_t io_handle;
@@ -200,86 +214,106 @@ private:
 
 TemperatureSensorData temperature_data;
 
-
 [[noreturn]] void task_update_display(void *pvParameter) {
 
     Display_Il9341 display(PIN_NUM_MOSI, PIN_NUM_CLK, PIN_NUM_CS, PIN_NUM_DC, PIN_NUM_RST, PIN_NUM_BCKL);
     display.init();
 
-    LVLG lvgl(display);
-    lvgl.init();
+LVLG lvgl(display);
+lvgl.init();
 
-    std::array<lv_obj_t *, 5> labels{};
+// ================= FRAME =================
+lv_obj_t * frame = lv_obj_create(lv_scr_act());
+lv_obj_set_size(frame,
+                Display_Il9341::HEIGHT - 10,
+                Display_Il9341::WIDTH - 10);
+lv_obj_center(frame);
 
-    lv_obj_t * frame = lv_obj_create(lv_scr_act());
-    lv_obj_set_size(frame, Display_Il9341::WIDTH - 10, Display_Il9341::HEIGHT - 10);
-    lv_obj_center(frame);
-    lv_obj_set_style_bg_color(frame, rgb_fix(DARK_BG), 0);
-    lv_obj_set_style_border_color(frame, rgb_fix(WHITE), 0);
-    lv_obj_set_style_border_width(frame, 2, 0);
+lv_obj_set_style_bg_color(frame, rgb_fix(DARK_BG), 0);
+lv_obj_set_style_border_color(frame, rgb_fix(WHITE), 0);
+lv_obj_set_style_border_width(frame, 2, 0);
 
-    lv_obj_set_flex_flow(frame, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(frame, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-    lv_obj_set_style_pad_row(frame, 20, 0);
+// Horizontal layout
+lv_obj_set_flex_flow(frame, LV_FLEX_FLOW_COLUMN);
+lv_obj_set_flex_align(
+    frame,
+    LV_FLEX_ALIGN_START,
+    LV_FLEX_ALIGN_START,
+    LV_FLEX_ALIGN_START
+);
 
-    lv_obj_t * header = lv_label_create(frame);
-    lv_label_set_text(header, LV_SYMBOL_HOME " Temperature reading");
-    lv_obj_set_style_text_color(header, rgb_fix(WHITE), 0);
-    lv_obj_set_style_text_font(header, &lv_font_montserrat_16, 0);
-    lv_obj_set_style_pad_bottom(header, 10, 0);
-    lv_obj_set_size(header, lv_pct(100), LV_SIZE_CONTENT);
-    lv_obj_set_style_border_color(header, rgb_fix(WHITE), 0);
-    lv_obj_set_style_border_side(header, LV_BORDER_SIDE_BOTTOM, 0);
-    lv_obj_set_style_border_width(header, 1, 0);
 
-    for (size_t i = 0; i < 5; i++) {
-        labels[i] = lv_label_create(frame);
-        lv_label_set_text(labels[i], "Label Text");
-        lv_obj_set_style_text_color(labels[i], rgb_fix(WHITE), 0);
-        lv_obj_set_style_text_font(labels[i], &lv_font_montserrat_30, 0);
-    }
+// ================= ROW CONTENT =================
+std::array<lv_obj_t *, 5> name_labels{};
+std::array<lv_obj_t *, 5> dot_labels{};
+std::array<lv_obj_t *, 5> temp_labels{};
+
+for (size_t i = 0; i < 5; i++) {
+
+    lv_obj_t * row = lv_obj_create(frame);
+    lv_obj_set_width(row, lv_pct(100));
+    lv_obj_set_height(row, LV_SIZE_CONTENT);
+
+    lv_obj_set_flex_flow(row, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(
+        row,
+        LV_FLEX_ALIGN_START,
+        LV_FLEX_ALIGN_CENTER,
+        LV_FLEX_ALIGN_CENTER
+    );
+
+    lv_obj_set_style_bg_opa(row, LV_OPA_TRANSP, 0);
+    lv_obj_set_style_border_width(row, 0, 0);
+    lv_obj_set_style_pad_all(row, 0, 0);
+    lv_obj_set_style_pad_column(row, 6, 0);
+
+    // NAME (left)
+    name_labels[i] = lv_label_create(row);
+    lv_label_set_text(name_labels[i], LABELS[i].data());
+    lv_obj_set_style_text_font(name_labels[i], &lv_font_montserrat_20, 0);
+
+    // DOTS (flex spacer)
+    dot_labels[i] = lv_label_create(row);
+    lv_label_set_text(dot_labels[i], "................................");
+    lv_obj_set_flex_grow(dot_labels[i], 1);
+    lv_label_set_long_mode(dot_labels[i], LV_LABEL_LONG_CLIP);
+    lv_obj_set_style_text_font(dot_labels[i], &lv_font_montserrat_16, 0);
+    lv_obj_set_style_text_color(dot_labels[i],
+                                rgb_fix({50,50,25`}), 0);
+
+    // TEMP (right)
+    temp_labels[i] = lv_label_create(row);
+    lv_label_set_text(temp_labels[i], "--.-°C");
+    lv_obj_set_style_text_font(temp_labels[i], &lv_font_montserrat_20, 0);
+    lv_obj_set_style_text_align(temp_labels[i], LV_TEXT_ALIGN_RIGHT, 0);
+}
+
+
 
     while (true) {
-            auto readings = temperature_data.get_readings();
-            for (size_t i = 0; i < 5; i++) {
-                char buf[32];
-                std::snprintf(buf, sizeof(buf), "Pipe %u: %.2f °C", static_cast<unsigned>(i + 1), readings[i]);
-                lv_label_set_text(labels[i], buf);
-            }
+        auto readings = temperature_data.get_readings();
 
-            lv_tick_inc(10);
-            lv_timer_handler();
-            vTaskDelay(pdMS_TO_TICKS(1000));
+        for (size_t i = 0; i < 5; i++) {
+            char buf[16];
+            std::snprintf(buf, sizeof(buf), "%.1f°C", readings[i]);
+
+            lv_label_set_text(temp_labels[i], buf);
         }
+
+        lv_tick_inc(1000);
+        lv_timer_handler();
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+
 }
 
 class DS18B20_Sensor {
 public:
     explicit DS18B20_Sensor(const gpio_num_t pin) : pin(pin) {}
+
     void init() {
         init_onewire_bus();
-
-        onewire_device_iter_handle_t iter = NULL;
-        onewire_device_t next_onewire_device;
-        esp_err_t search_result = ESP_OK;
-
-        ESP_ERROR_CHECK(onewire_new_device_iter(bus, &iter));
-        ESP_LOGI(TAG, "Device iterator created, start searching...");
-        do {
-            search_result = onewire_device_iter_get_next(iter, &next_onewire_device);
-            if (search_result == ESP_OK) { // found a new device, let's check if we can upgrade it to a DS18B20
-                ds18b20_config_t ds_cfg = {};
-                onewire_device_address_t address;
-
-                if (ds18b20_new_device_from_enumeration(&next_onewire_device, &ds_cfg, &device) == ESP_OK) {
-                    ds18b20_get_device_address(device, &address);
-                    ESP_LOGI(TAG, "Found a DS18B20[%d], address: %016llX", 1, address);
-                } else {
-                    ESP_LOGI(TAG, "Found an unknown device, address: %016llX", next_onewire_device.address);
-                }
-            }
-        } while (search_result != ESP_ERR_NOT_FOUND);
-
+        init_device();
     }
 
     [[nodiscard]] float read_temperature() const {
@@ -303,23 +337,44 @@ private:
        const onewire_bus_config_t bus_config = {
             .bus_gpio_num = this->pin,
             .flags = {
-                .en_pull_up = true, // enable the internal pull-up resistor in case the external device didn't have one
+                .en_pull_up = true,
             }
         };
         constexpr onewire_bus_rmt_config_t rmt_config = {
-            .max_rx_bytes = 10, // 1byte ROM command + 8byte ROM number + 1byte device command
+            .max_rx_bytes = 10,
         };
 
         ESP_ERROR_CHECK(onewire_new_bus_rmt(&bus_config, &rmt_config, &bus));
+    }
 
-        // ESP_ERROR_CHECK(onewire_new_device_iter(bus, &iter));
+    void init_device() {
+        onewire_device_iter_handle_t iter = nullptr;
+        onewire_device_t next_onewire_device;
+        esp_err_t search_result = ESP_OK;
+
+        ESP_ERROR_CHECK(onewire_new_device_iter(bus, &iter));
+        ESP_LOGI(TAG, "Device iterator created, start searching...");
+        do {
+            search_result = onewire_device_iter_get_next(iter, &next_onewire_device);
+            if (search_result == ESP_OK) {
+                ds18b20_config_t ds_cfg = {};
+                onewire_device_address_t address;
+
+                if (ds18b20_new_device_from_enumeration(&next_onewire_device, &ds_cfg, &device) == ESP_OK) {
+                    ds18b20_get_device_address(device, &address);
+                    ESP_LOGI(TAG, "Found a DS18B20[%d], address: %016llX", 1, address);
+                } else {
+                    ESP_LOGI(TAG, "Found an unknown device, address: %016llX", next_onewire_device.address);
+                }
+            }
+        } while (search_result != ESP_ERR_NOT_FOUND);
+
     }
 };
 
 [[noreturn]] void task_read_temperature_sensors(void *pvParameter) {
     DS18B20_Sensor sensor(GPIO_NUM_16);
     sensor.init();
-
 
     while (true) {
         const float temp = sensor.read_temperature();
