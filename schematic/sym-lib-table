@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "jack-trs")(type "Legacy")(uri "/home/debilian/Pobrane/PJ-320A_KiCad_Library-main/PJ-320A_Library.lib")(options "")(descr ""))
+  (lib (name "pj320A")(type "KiCad")(uri "/home/debilian/Pobrane/PJ-320A_KiCad_Library-main/PJ-320A_Library.dcm")(options "")(descr ""))
+)
