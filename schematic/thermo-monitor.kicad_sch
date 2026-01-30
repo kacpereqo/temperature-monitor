@@ -2861,8 +2861,20 @@
 		(uuid 63b62a7a-6b26-4190-a6d5-5011272e653a)
 	)
 	(rectangle
+		(start 162.56 91.44)
+		(end 196.85 120.65)
+		(stroke
+			(width 0)
+			(type dash)
+		)
+		(fill
+			(type none)
+		)
+		(uuid aafb5ff1-274e-42e9-9bd8-58e108e57442)
+	)
+	(rectangle
 		(start 132.08 91.44)
-		(end 161.29 120.65)
+		(end 157.48 120.65)
 		(stroke
 			(width 0)
 			(type dash)
@@ -2927,6 +2939,16 @@
 			)
 		)
 		(uuid "3c74c442-1473-493c-93ec-0f7ab2595b10")
+	)
+	(text "Buttons\n"
+		(exclude_from_sim no)
+		(at 165.862 90.424 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "6a7982f3-d8ca-4c05-bbae-60b3ca5ba5a3")
 	)
 	(text "Termo sensors - Board side\n\n"
 		(exclude_from_sim no)
@@ -3029,6 +3051,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "832e5e71-d88e-4d9c-b990-b7b1eae2ef8d")
+	)
+	(junction
+		(at 187.96 102.87)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "8a2d54c6-c6d5-4d09-b55d-533de457ed2b")
 	)
 	(junction
 		(at 58.42 48.26)
@@ -3178,6 +3206,16 @@
 	)
 	(wire
 		(pts
+			(xy 187.96 114.3) (xy 187.96 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "19c25880-678d-4997-8f3f-a28ef5858e01")
+	)
+	(wire
+		(pts
 			(xy 40.64 88.9) (xy 53.34 88.9)
 		)
 		(stroke
@@ -3215,6 +3253,16 @@
 			(type default)
 		)
 		(uuid "273630ba-274d-4ebb-9d5e-1dce9b6995f5")
+	)
+	(wire
+		(pts
+			(xy 187.96 102.87) (xy 184.15 102.87)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "279a9f6f-878c-4926-afb9-e8a4cf97f05c")
 	)
 	(wire
 		(pts
@@ -3295,6 +3343,16 @@
 			(type default)
 		)
 		(uuid "42b40335-f585-4c8b-b2ac-0411687e420f")
+	)
+	(wire
+		(pts
+			(xy 184.15 114.3) (xy 187.96 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "431991d1-8fb6-4015-9080-05576e489af2")
 	)
 	(wire
 		(pts
@@ -3776,6 +3834,28 @@
 		)
 		(uuid "f16a18cc-ab49-4bee-a448-d183b3942214")
 	)
+	(global_label "GPIO22"
+		(shape input)
+		(at 173.99 114.3 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "1537eacf-c355-4d23-a841-5fdf02117247")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 164.1105 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "GPIO17"
 		(shape output)
 		(at 148.59 67.31 270)
@@ -4238,6 +4318,50 @@
 			)
 		)
 	)
+	(global_label "GPIO22"
+		(shape input)
+		(at 109.22 38.1 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "e92ed65c-ef1f-41a6-bdd0-b9729750a3be")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 119.0995 38.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "GPIO21"
+		(shape input)
+		(at 173.99 102.87 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "eb2508d7-7875-4de3-9ac5-a67337568010")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 164.1105 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "GPIO32"
 		(shape input)
 		(at 43.18 114.3 0)
@@ -4260,9 +4384,31 @@
 			)
 		)
 	)
+	(global_label "GPIO21"
+		(shape input)
+		(at 109.22 45.72 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "fb6f0370-cdc1-4b83-b57e-116293e320bc")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 119.0995 45.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 151.13 104.14 270)
+		(at 147.32 104.14 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4270,7 +4416,7 @@
 		(dnp no)
 		(uuid "06b0e475-5a27-4b05-aefd-2bb757f03566")
 		(property "Reference" "#PWR08"
-			(at 147.32 104.14 0)
+			(at 143.51 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4279,7 +4425,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 155.956 104.14 90)
+			(at 152.146 104.14 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4287,7 +4433,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 151.13 104.14 0)
+			(at 147.32 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4296,7 +4442,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 151.13 104.14 0)
+			(at 147.32 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4305,7 +4451,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 151.13 104.14 0)
+			(at 147.32 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4395,7 +4541,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 151.13 109.22 90)
+		(at 147.32 109.22 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4404,7 +4550,7 @@
 		(fields_autoplaced yes)
 		(uuid "13666319-4f58-4a2e-b41f-0868a14a9f9b")
 		(property "Reference" "#PWR010"
-			(at 157.48 109.22 0)
+			(at 153.67 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4413,7 +4559,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 154.94 109.2199 90)
+			(at 151.13 109.2199 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4422,7 +4568,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 151.13 109.22 0)
+			(at 147.32 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4431,7 +4577,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 151.13 109.22 0)
+			(at 147.32 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4440,7 +4586,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 151.13 109.22 0)
+			(at 147.32 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5549,7 +5695,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Push_Dual_x2")
-		(at 179.07 101.6 0)
+		(at 179.07 102.87 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5558,7 +5704,7 @@
 		(fields_autoplaced yes)
 		(uuid "b7bf26f7-29e9-445f-995c-8a3d6de7e681")
 		(property "Reference" "SW1"
-			(at 179.07 93.98 0)
+			(at 179.07 95.25 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5566,7 +5712,7 @@
 			)
 		)
 		(property "Value" "SW_Push_Dual_x2"
-			(at 179.07 96.52 0)
+			(at 179.07 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5574,7 +5720,7 @@
 			)
 		)
 		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm_H13mm"
-			(at 179.07 96.52 0)
+			(at 179.07 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5583,7 +5729,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 179.07 96.52 0)
+			(at 179.07 97.79 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5592,7 +5738,7 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, separate symbols, four pins"
-			(at 179.07 101.6 0)
+			(at 179.07 102.87 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6038,7 +6184,7 @@
 	)
 	(symbol
 		(lib_id "Switch:SW_Push_Dual_x2")
-		(at 179.07 113.03 0)
+		(at 179.07 114.3 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6047,7 +6193,7 @@
 		(fields_autoplaced yes)
 		(uuid "fd0d4ec7-860d-4ea1-a465-27651d44c537")
 		(property "Reference" "SW2"
-			(at 179.07 105.41 0)
+			(at 179.07 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6055,7 +6201,7 @@
 			)
 		)
 		(property "Value" "SW_Push_Dual_x2"
-			(at 179.07 107.95 0)
+			(at 179.07 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6063,7 +6209,7 @@
 			)
 		)
 		(property "Footprint" "Button_Switch_THT:SW_PUSH_6mm_H13mm"
-			(at 179.07 107.95 0)
+			(at 179.07 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6072,7 +6218,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 179.07 107.95 0)
+			(at 179.07 109.22 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6081,7 +6227,7 @@
 			)
 		)
 		(property "Description" "Push button switch, generic, separate symbols, four pins"
-			(at 179.07 113.03 0)
+			(at 179.07 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6090,7 +6236,7 @@
 			)
 		)
 		(pin "4"
-			(uuid "1c2edc7f-c37d-41e2-bd1a-7b8f806ae6f1")
+			(uuid "1c2edc7f-c37d-41e2-bd1a-7b8f806ae6f2")
 		)
 		(pin "2"
 			(uuid "2a151154-8754-4e6e-ae7b-ad687b10ebbc")
@@ -6099,7 +6245,7 @@
 			(uuid "4ee723b2-c76f-4e64-b241-fb1d6bdf7a4d")
 		)
 		(pin "3"
-			(uuid "8b00acab-8ff1-43f2-8963-40afe7208632")
+			(uuid "8b00acab-8ff1-43f2-8963-40afe7208633")
 		)
 		(instances
 			(project "thermo-monitor"
@@ -6111,17 +6257,83 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Barrel_Jack_Switch")
-		(at 143.51 106.68 0)
+		(lib_id "power:GND")
+		(at 187.96 102.87 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
+		(uuid "fd3eec25-237e-4398-b73e-6462b985a30c")
+		(property "Reference" "#PWR07"
+			(at 194.31 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 191.77 102.8699 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 187.96 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 187.96 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 187.96 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "56bca96f-4701-4178-b1bf-04adb56d01e0")
+		)
+		(instances
+			(project "thermo-monitor"
+				(path "/faed34e2-83f7-48c9-ac0d-867fec81fa25"
+					(reference "#PWR07")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Barrel_Jack_Switch")
+		(at 139.7 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
 		(uuid "fe98a6dd-2645-4785-852b-b44d0e92e26a")
 		(property "Reference" "J6"
-			(at 143.51 97.79 0)
+			(at 143.764 98.044 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6129,7 +6341,7 @@
 			)
 		)
 		(property "Value" "Barrel_Jack_Switch"
-			(at 143.51 100.33 0)
+			(at 143.764 100.584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6137,7 +6349,7 @@
 			)
 		)
 		(property "Footprint" "Connector_BarrelJack:BarrelJack_GCT_DCJ200-10-A_Horizontal"
-			(at 144.78 107.696 0)
+			(at 140.97 107.696 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6146,7 +6358,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 144.78 107.696 0)
+			(at 140.97 107.696 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6155,7 +6367,7 @@
 			)
 		)
 		(property "Description" "DC Barrel Jack with an internal switch"
-			(at 143.51 106.68 0)
+			(at 139.7 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
