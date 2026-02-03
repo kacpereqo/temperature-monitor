@@ -25,7 +25,10 @@ namespace Task
 		LVLG lvgl(display);
 		lvgl.init();
 
+		MainScreen main_screen(lvgl);
+
 		while (true) {
+			main_screen.update();
 			lv_tick_inc(1000);
 			lv_timer_handler();
 			vTaskDelay(pdMS_TO_TICKS(1000));

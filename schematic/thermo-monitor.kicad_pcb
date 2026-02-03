@@ -5408,16 +5408,17 @@
 			)
 		)
 	)
-	(gr_rect
-		(start 72.4804 79.2418)
-		(end 249.5534 135)
+	(gr_poly
+		(pts
+			(xy 104 126) (xy 134 126) (xy 134 134) (xy 249 134) (xy 249 80) (xy 72 80) (xy 72 134) (xy 104 134)
+		)
 		(stroke
 			(width 0.05)
-			(type default)
+			(type solid)
 		)
 		(fill no)
 		(layer "Edge.Cuts")
-		(uuid "59a989bd-35d1-448e-b89b-870c0b06370c")
+		(uuid "5f667412-7d7a-46c5-9cfe-dc11b6c6bcd4")
 	)
 	(segment
 		(start 106.11908 89.182374)
