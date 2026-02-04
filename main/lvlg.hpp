@@ -11,6 +11,7 @@
 
 #include <array>
 #include "il_9341.hpp"
+#include "temperature_data.hpp"
 
 static lv_color_t WHITE   = lv_color_make(255, 255, 255);
 static lv_color_t BLACK   = lv_color_make(0, 0, 0);
@@ -51,7 +52,10 @@ public:
 
 	void update()
 	{
-		if (!is_initialized) this->init();
+		if (!is_initialized) {
+			this->init();
+			is_initialized = true;
+		}
 		this->_update();
 	}
 
@@ -66,6 +70,8 @@ private:
 class MainScreen : public Screen
 {
 private:
+	TemperatureSensorData& state;
+
 	lv_obj_t *frame{};
 	std::array<lv_obj_t *, 5> name_labels{};
 	std::array<lv_obj_t *, 5> dot_labels{};
@@ -73,12 +79,12 @@ private:
 
 public:
 
-	MainScreen(LVLG& lvlg) : Screen(lvlg)
+	MainScreen(LVLG& lvlg, TemperatureSensorData& state) : Screen(lvlg), state(state)
 	{}
 
 	void _update() override
 {
-	constexpr auto readings = std::array<float, 5>{0};
+	auto readings = state.get_readings();
 
 	for (size_t i = 0; i < 5; i++) {
 		char buf[16];

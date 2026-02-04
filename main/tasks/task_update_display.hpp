@@ -12,6 +12,7 @@ namespace Task
 {
 	[[noreturn]] void task_update_display(void *pvParameter)
 	{
+		auto& state = *static_cast<TemperatureSensorData*>(pvParameter);
 
 		Display_Il9341 display(Pinout::IL9341::MOSI,
 		                       Pinout::IL9341::CLK,
@@ -25,7 +26,7 @@ namespace Task
 		LVLG lvgl(display);
 		lvgl.init();
 
-		MainScreen main_screen(lvgl);
+		MainScreen main_screen(lvgl, state);
 
 		while (true) {
 			main_screen.update();
