@@ -2,6 +2,8 @@
 #include "esp_event.h"
 #include <cstring> // for strerror
 
+#include "constants.hpp"
+
 // Define the static TAG
 const char* MqttManager::TAG = "MQTT";
 
@@ -53,7 +55,7 @@ void MqttManager::init()
     
     client = esp_mqtt_client_init(&mqtt_cfg);
 
-    esp_mqtt_client_register_event(client, (esp_mqtt_event_id_t)ESP_EVENT_ANY_ID, mqtt_event_handler, nullptr);
+    esp_mqtt_client_register_event(client, static_cast<esp_mqtt_event_id_t>(ESP_EVENT_ANY_ID), mqtt_event_handler, nullptr);
 
     esp_mqtt_client_start(client);
 }
@@ -82,7 +84,7 @@ void MqttManager::publish_temperatures(const std::array<float, 5> &temperatures)
 
 		json_str += "]}";
 
-		esp_mqtt_client_publish(client, "my_device/sensors", json_str.c_str(), 0, 1, 0);
+		esp_mqtt_client_publish(client, Network::MQTT::TOPIC.data(), json_str.c_str(), 0, 1, 0);
 
 		ESP_LOGI(TAG, "Sent: %s", json_str.c_str());
 }

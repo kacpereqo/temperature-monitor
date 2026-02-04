@@ -18,6 +18,7 @@ namespace Network
 	}
 	namespace MQTT
 	{
+		constexpr std::string_view TOPIC = "termo_monitor/temperatures";
 		constexpr std::string_view BROKER_URI = "mqtt://test.mosquitto.org";
 	}
 }
