@@ -1,2 +1,2 @@
 PORT="/dev/ttyUSB0"
-idf.py -p $PORT flash monitor
+idf.py -p $PORT app-flash monitor

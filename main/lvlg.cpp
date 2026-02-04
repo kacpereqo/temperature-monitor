@@ -67,14 +67,27 @@ void LVLG::init()
 	        &cbs,
 	        disp));
 
-	static lv_color_t buf1[Display_Il9341::WIDTH * 40];
-	static lv_color_t buf2[Display_Il9341::WIDTH * 40];
+	static lv_color_t *buf1;
+	static lv_color_t *buf2;
+
+	buf1 = (lv_color_t *)heap_caps_malloc(
+		Display_Il9341::WIDTH * 40 * sizeof(lv_color_t),
+		MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL
+	);
+
+	buf2 = (lv_color_t *)heap_caps_malloc(
+		Display_Il9341::WIDTH * 40 * sizeof(lv_color_t),
+		MALLOC_CAP_DMA | MALLOC_CAP_INTERNAL
+	);
+
+	assert(buf1 && buf2);
+
 
 	lv_display_set_buffers(
 	    disp,
 	    buf1,
 	    buf2,
-	    sizeof(buf1),
+	    Display_Il9341::WIDTH * 40 * sizeof(lv_color_t),
 	    LV_DISPLAY_RENDER_MODE_PARTIAL);
 
 	lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_90);

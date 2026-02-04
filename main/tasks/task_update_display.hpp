@@ -7,11 +7,16 @@
 #include "../constants.hpp"
 #include "../il_9341.hpp"
 #include "../lvlg.hpp"
+#include "esp_log.h"
 
 namespace Task
 {
+	inline TaskHandle_t display_task_handle = nullptr;
+
 	[[noreturn]] void task_update_display(void *pvParameter)
 	{
+		ESP_LOGI("GUI", "Running on core %d", xPortGetCoreID());
+
 		auto& state = *static_cast<TemperatureSensorData*>(pvParameter);
 
 		Display_Il9341 display(Pinout::IL9341::MOSI,
@@ -26,13 +31,16 @@ namespace Task
 		LVLG lvgl(display);
 		lvgl.init();
 
-		MainScreen main_screen(lvgl, state);
+		size_t current_screen = 0;
+		std::array screens = {MainScreen{ state}};
 
 		while (true) {
-			main_screen.update();
-			lv_tick_inc(1000);
+			xTaskNotifyWait(0,0,nullptr, portMAX_DELAY);
+
+			screens[current_screen].update();
+
+			lv_tick_inc(Task::Delay::TEMPERATURE_UPDATE);
 			lv_timer_handler();
-			vTaskDelay(pdMS_TO_TICKS(1000));
 		}
 	}
 } // namespace Task

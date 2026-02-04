@@ -7,6 +7,20 @@
 #include <array>
 #include <string_view>
 #include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+namespace Network
+{
+	namespace Wifi
+	{
+		constexpr std::string_view SSID = "FTTH-1-2.4G-483580_EXT";
+		constexpr std::string_view PASS = "QyFxdyrD";
+	}
+	namespace MQTT
+	{
+		constexpr std::string_view BROKER_URI = "mqtt://test.mosquitto.org";
+	}
+}
 
 namespace GUI
 {
@@ -23,21 +37,23 @@ namespace Task
 {
 	namespace Delay
 	{
-		constexpr uint32_t TEMPERATURE_UPDATE = 1000;
-		constexpr uint32_t GUI_UPDATE         = 1000;
+		constexpr uint32_t TEMPERATURE_UPDATE = 100;
+		constexpr uint32_t GUI_UPDATE         = 500;
+		constexpr uint32_t MQTT_SEND          = 10'000;
 	} // namespace Delay
 
 	namespace Priority
 	{
-		constexpr uint32_t TEMPERATURE_UPDATE = tskIDLE_PRIORITY + 1;
+		constexpr uint32_t TEMPERATURE_UPDATE = tskIDLE_PRIORITY + 2;
 		constexpr uint32_t GUI_UPDATE         = tskIDLE_PRIORITY + 1;
+		constexpr uint32_t MQTT_SEND          = tskIDLE_PRIORITY + 1;
 	} // namespace Priority
 
 	namespace StackDepth
 	{
 		constexpr uint32_t TEMPERATURE_UPDATE = 4096;
 		constexpr uint32_t GUI_UPDATE         = 8192;
-
+		constexpr uint32_t MQTT_SEND          = 8192;
 	} // namespace StackDepth
 } // namespace Task
 
@@ -57,7 +73,7 @@ namespace Pinout
 	{
 		constexpr std::array PINS = {
 		  GPIO_NUM_16,
-		  GPIO_NUM_NC,
+		  GPIO_NUM_17,
 		  GPIO_NUM_NC,
 		  GPIO_NUM_NC,
 		  GPIO_NUM_NC,
