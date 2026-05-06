@@ -486,10 +486,10 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "../../gbr/",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "thermo-monitor.step",
       "svg": "",
       "vrml": ""
     },
